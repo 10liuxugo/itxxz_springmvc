@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans   
+	http://www.springframework.org/schema/beans/spring-beans-3.1.xsd  
+	http://www.springframework.org/schema/context   
+	http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+	
+	 <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean" lazy-init="false">  
+        <property name="triggers">  
+            <list> 
+                <ref local="orgnBasicTrigger"/>   
+                <ref local="UserInfoTrigger"/>  
+                <ref local="FNCGTrigger"/> 
+                <ref local="PnsMapInfoTrigger"/>
+                <ref local="PnsMapContentTrigger"/>
+                <ref local="UpdateLoginTrigger"/>
+            </list>  
+        </property> 
+        <property name="configLocation" value="classpath:quartz.properties" /> 
+    </bean>  
+    
+    <!--ORGN_BASIC 机构维护表-->
+	<bean id="orgnBasicJob" class="org.springframework.scheduling.quartz.JobDetailBean">  
+        <property name="name" value="orgnBasicJob"/>  
+        <property name="group" value="Lod"/>  
+        <property name="jobClass" value="com.cvicin.timer.job.OrgnBasicJob"/>  
+        <property name="jobDataAsMap">  
+            <map>  
+                <entry key="code" value="GBK"/>  
+                <entry key="filePath" value="LOD_ABIS_BRT"/>  
+                <entry key="split" value=","/>  
+            </map>  
+        </property>  
+    </bean> 
+    <bean id="orgnBasicTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">  
+        <property name="jobDetail" ref="orgnBasicJob"/>  
+        <property name="cronExpression" value="0 0 23 * * ?"></property>  
+    </bean>  
+    
+    <!--USER_INFO 用户维护表-->
+	<bean id="UserInfoJob" class="org.springframework.scheduling.quartz.JobDetailBean">  
+        <property name="name" value="UserInfoJob"/>  
+        <property name="group" value="Lod"/>  
+        <property name="jobClass" value="com.cvicin.timer.job.UserInfoJob"/>  
+        <property name="jobDataAsMap">  
+            <map>  
+                <entry key="code" value="GBK"/>  
+                <entry key="filePath" value="LOD_BOE_OG_USER"/>  
+                <entry key="split" value=","/>  
+            </map>  
+        </property>  
+    </bean> 
+    <bean id="UserInfoTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">  
+        <property name="jobDetail" ref="UserInfoJob"/>  
+        <property name="cronExpression" value="0 5 23 * * ?"></property>  
+    </bean>  
+    
+    
+     <!--IF_FNCG_PD_QRY 投资理财理财产品快速查询表-->
+	<bean id="FNCGJob" class="org.springframework.scheduling.quartz.JobDetailBean">  
+        <property name="name" value="FNCGJob"/>  
+        <property name="group" value="Boing"/>  
+        <property name="jobClass" value="com.cvicin.timer.job.DBJob"/>  
+        <property name="jobDataAsMap">  
+            <map>  
+                <entry key="code" value="GBK"/>  
+                <entry key="filePath" value="00-BoEing-IF_FNCG_PD_QRY-2G"/>  
+                <entry key="split" value="|!"/> 
+                <entry key="tableName" value="IF_FNCG_PD_QRY"/>   
+                <entry key="primaryKey" value="NUM_TARF:VARCHAR:4"/>  
+                <entry key="column" value="COD_PD_LINE:VARCHAR:2,ID_GRP_PD:VARCHAR:3,NUM_TARF:VARCHAR:4,ID_IF_TARF_EXTID:VARCHAR:5,IND_MAIN_INTL_TARF:VARCHAR:6,NAM_TARF:VARCHAR:7,COD_ISO_CCY:VARCHAR:8,NAM_PD_BRND:VARCHAR:9,COD_TARF_RSK_LVL:VARCHAR:10,VLU_TERM:INT:11,COD_UNIT_MESR:VARCHAR:12,COD_MAK_PRCE_TYP:VARCHAR:13,VLU_EST_RATE_MIN:VARCHAR:14,VLU_EST_RATE_MAX:VARCHAR:15,COD_IF_PD_PFT_TYP:VARCHAR:16,VLU_ISUE_YEAR:VARCHAR:17,COD_BI_TARF_OPEN:VARCHAR:18,COD_IF_CUST_TYP:VARCHAR:24,VLU_SSCR_REF_PRCE:VARCHAR:32,VLU_PURC_REF_PRCE:VARCHAR:33,DATE_VLU_STRT:VARCHAR:34,DATE_MATU:VARCHAR:35,DATE_CLCT_STRT:VARCHAR:36,DATE_CLCT_END:VARCHAR:38,AMT_FORG_SSCR_STRT:VARCHAR:55,AMT_FORG_SSCR_STEP:VARCHAR:56,AMT_FORG_SSCR_MAX:VARCHAR:57,AMT_FIDV_SSCR_STRT:VARCHAR:58,AMT_FIDV_SSCR_STEP:VARCHAR:59,AMT_FIDV_SSCR_MAX:VARCHAR:60,AMT_FORG_PURC_STRT:VARCHAR:76,AMT_FORG_PURC_STEP:VARCHAR:68,AMT_FORG_PURC_MAX:VARCHAR:69,AMT_FIDV_PURC_STRT:VARCHAR:70,AMT_FIDV_PURC_STEP:VARCHAR:71,AMT_FIDV_PURC_MAX:VARCHAR:72"/> 
+            </map>  
+        </property>  
+    </bean> 
+    <bean id="FNCGTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">  
+        <property name="jobDetail" ref="FNCGJob"/>  
+        <property name="cronExpression" value="0 40 23 * * ?"></property>  
+    </bean>  
+
+    
+    <!-- PNS_MAP_INFO -->
+	<bean id="PNS_MAP_INFO" class="org.springframework.scheduling.quartz.JobDetailBean">  
+        <property name="name" value="PNS_MAP_INFO"/>  
+        <property name="group" value="Boing"/>  
+        <property name="jobClass" value="com.cvicin.timer.job.PnsMapInfo"/>  
+        <property name="jobDataAsMap">  
+            <map>  
+                <entry key="code" value="GBK"/>  
+                <entry key="filePath" value="PNS_MAP_INFO"/>  
+                <entry key="split" value="@@@@"/> 
+            </map>  
+        </property>  
+    </bean> 
+    <bean id="PnsMapInfoTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">  
+        <property name="jobDetail" ref="PNS_MAP_INFO"/>  
+        <property name="cronExpression" value="0 45 23 * * ?"></property>  
+    </bean>  
+ 
+<!-- PNS_MAP_CONTENT -->
+	<bean id="PNS_MAP_CONTENT" class="org.springframework.scheduling.quartz.JobDetailBean">  
+        <property name="name" value="PNS_MAP_CONTENT"/>  
+        <property name="group" value="Boing"/>  
+        <property name="jobClass" value="com.cvicin.timer.job.PnsMapContent"/>  
+        <property name="jobDataAsMap">  
+            <map>  
+                <entry key="code" value="GBK"/>  
+                <entry key="filePath" value="PNS_MAP_CONTENT"/>  
+                <entry key="split" value="@@@@"/> 
+            </map>  
+        </property>  
+    </bean> 
+    <bean id="PnsMapContentTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">  
+        <property name="jobDetail" ref="PNS_MAP_CONTENT"/>  
+        <property name="cronExpression" value="0 50 23 * * ?"></property>  
+    </bean>
+    
+     <!--USER_LOGIN-->
+	<bean id="updateLoginJob" class="org.springframework.scheduling.quartz.JobDetailBean">  
+        <property name="name" value="updateLoginJob"/>  
+        <property name="group" value="pwms"/>  
+        <property name="jobClass" value="com.cvicin.timer.job.UpdateLoginJob"/>  
+	</bean>
+	
+    <bean id="UpdateLoginTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">  
+        <property name="jobDetail" ref="updateLoginJob"/>  
+        <property name="cronExpression" value="0 55 23 * * ?"></property>  
+    </bean>  
+    
+<!--updateOcrJob
+	<bean id="updateOcrJob" class="org.springframework.scheduling.quartz.JobDetailBean">  
+        <property name="name" value="updateOcrJob"/>  
+        <property name="group" value="Boing"/>  
+        <property name="jobClass" value="com.cvicin.timer.job.OnsCustReceptionJob"/>  
+    </bean> 
+    <bean id="updateOrcTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">  
+        <property name="jobDetail" ref="updateOcrJob"/>  
+        <property name="cronExpression" value="0 45 * * * ?"></property>  
+    </bean> 
+	<bean id="IF_TRC_FORM_40" class="org.springframework.scheduling.quartz.JobDetailBean">  
+        <property name="name" value="IF_TRC_FORM_40"/>  
+        <property name="group" value="Boing"/>  
+        <property name="jobClass" value="com.cvicin.timer.job.DBJob"/>  
+        <property name="jobDataAsMap">  
+            <map>  
+                <entry key="code" value="GBK"/>  
+                <entry key="filePath" value="19-BoEing-IF_TRC_FORM_41-1G"/>  
+                <entry key="split" value="|!"/> 
+                <entry key="tableName" value="IF_TRC_FORM_40"/>   
+                <entry key="primaryKey" value="COD_FN_ENT:VARCHAR:1,NUM_SEQ_TRC_FORM:VARCHAR:2"/>  
+                <entry key="column" value="COD_FN_ENT:VARCHAR:1,NUM_SEQ_TRC_FORM:VARCHAR:2,COD_TRC_FORM_TYP:VARCHAR:3,COD_PRO_COD:VARCHAR:4,COD_BRCH_OU:VARCHAR:5,COD_PD_LINE:VARCHAR:6,ID_GRP_PD:VARCHAR:7,NUM_TARF:VARCHAR:8,NUM_SEQ_AR_IF_REG:VARCHAR:9,NUM_SEQ_AR:VARCHAR:10,NUM_SUB_AR:VARCHAR:11,VLU_SHR_REQ:VARCHAR:12,AMT_REQ:VARCHAR:13,VLU_SHR_ACT:VARCHAR:14,AMT_ACT:VARCHAR:15,VLU_PD_PRCE:VARCHAR:16,VLU_REF_PRCE:VARCHAR:17,VLU_PCT_FEE:VARCHAR:18,AMT_TR_FEE:VARCHAR:19,AMT_FEE_OTH:VARCHAR:20,VLU_PCT_PFT:VARCHAR:21,COD_TRC_FORM_MSK:VARCHAR:22,COD_CHANL:VARCHAR:23,COD_CUST_TYP:VARCHAR:24,COD_LCS_TRC_FORM:VARCHAR:25,DATE_LCS_CUR:VARCHAR:26,TIME_STRT_LCS:VARCHAR:27,DATE_TRC_FORM_CRT:VARCHAR:28,TIME_TRC_FORM_CRT:VARCHAR:29,DATE_MATU:VARCHAR:30,TIME_MATU:VARCHAR:31,DATE_APLY:VARCHAR:32,DATE_CFM:VARCHAR:33,TXT_REM_1:VARCHAR:34,TXT_REM_2:VARCHAR:35"/> 
+            </map>  
+        </property>  
+    </bean> 
+    <bean id="IF_TRC_FORM_40_Trigger" class="org.springframework.scheduling.quartz.CronTriggerBean">  
+        <property name="jobDetail" ref="IF_TRC_FORM_40"/>  
+        <property name="cronExpression" value="0 10 * * * ?"></property>  
+    </bean>
+    
+	<bean id="IF_TRC_FORM_LCS_40" class="org.springframework.scheduling.quartz.JobDetailBean">  
+        <property name="name" value="IF_TRC_FORM_LCS_40"/>  
+        <property name="group" value="Boing"/>  
+        <property name="jobClass" value="com.cvicin.timer.job.DBJob"/>  
+        <property name="jobDataAsMap">  
+            <map>  
+                <entry key="code" value="GBK"/>  
+                <entry key="filePath" value="19-BoEing-IF_TRC_FORM_LCS_41-1G"/>  
+                <entry key="split" value="|!"/> 
+                <entry key="tableName" value="IF_TRC_FORM_LCS_40"/>   
+                <entry key="primaryKey" value="COD_FN_ENT:VARCHAR:1,NUM_SEQ_TRC_FORM:VARCHAR:2,COD_LCS_TRC_FORM:VARCHAR:3,NUM_SEQ:VARCHAR:4"/>
+                <entry key="column" value="COD_FN_ENT:VARCHAR:1,NUM_SEQ_TRC_FORM:VARCHAR:2,COD_LCS_TRC_FORM:VARCHAR:3,NUM_SEQ:VARCHAR:4,DATE_STRT_LCS:VARCHAR:5,COD_BUS_SND:VARCHAR:6,COD_PSG:VARCHAR:7,COD_FN_ENT_TR:VARCHAR:8,DATE_TR:VARCHAR:9,TIME_TR:VARCHAR:10,NUM_JRN_NO:VARCHAR:11,COD_PRO_COD_TR:VARCHAR:12,COD_BRCH_OU_TR:VARCHAR:13,ID_INTL_USER_TR:VARCHAR:14,ID_INTL_DEV_TR:VARCHAR:15,COD_TR:VARCHAR:16,COD_CHANL:VARCHAR:17,TXT_REM:VARCHAR:18"/> 
+            </map>  
+        </property>  
+    </bean> 
+    <bean id="IF_TRC_FORM_LCS_40_Trigger" class="org.springframework.scheduling.quartz.CronTriggerBean">  
+        <property name="jobDetail" ref="IF_TRC_FORM_LCS_40"/>  
+        <property name="cronExpression" value="0 15 * * * ?"></property>  
+    </bean>    
+   
+	<bean id="IF_TRC_FORM_41" class="org.springframework.scheduling.quartz.JobDetailBean">  
+        <property name="name" value="IF_TRC_FORM_41"/>  
+        <property name="group" value="Boing"/>  
+        <property name="jobClass" value="com.cvicin.timer.job.DBJob"/>  
+        <property name="jobDataAsMap">  
+            <map>  
+                <entry key="code" value="GBK"/>  
+                <entry key="filePath" value="19-BoEing-IF_TRC_FORM_41-1G"/>  
+                <entry key="split" value="|!"/> 
+                <entry key="tableName" value="IF_TRC_FORM_41"/>   
+                <entry key="primaryKey" value="COD_FN_ENT:VARCHAR:1,NUM_SEQ_TRC_FORM:VARCHAR:2"/>  
+                <entry key="column" value="COD_FN_ENT:VARCHAR:1,NUM_SEQ_TRC_FORM:VARCHAR:2,COD_TRC_FORM_TYP:VARCHAR:3,COD_PRO_COD:VARCHAR:4,COD_BRCH_OU:VARCHAR:5,COD_PD_LINE:VARCHAR:6,ID_GRP_PD:VARCHAR:7,NUM_TARF:VARCHAR:8,NUM_SEQ_AR_IF_REG:VARCHAR:9,NUM_SEQ_AR:VARCHAR:10,NUM_SUB_AR:VARCHAR:11,VLU_SHR_REQ:VARCHAR:12,AMT_REQ:VARCHAR:13,VLU_SHR_ACT:VARCHAR:14,AMT_ACT:VARCHAR:15,VLU_PD_PRCE:VARCHAR:16,VLU_REF_PRCE:VARCHAR:17,VLU_PCT_FEE:VARCHAR:18,AMT_TR_FEE:VARCHAR:19,AMT_FEE_OTH:VARCHAR:20,VLU_PCT_PFT:VARCHAR:21,COD_TRC_FORM_MSK:VARCHAR:22,COD_CHANL:VARCHAR:23,COD_CUST_TYP:VARCHAR:24,COD_LCS_TRC_FORM:VARCHAR:25,DATE_LCS_CUR:VARCHAR:26,TIME_STRT_LCS:VARCHAR:27,DATE_TRC_FORM_CRT:VARCHAR:28,TIME_TRC_FORM_CRT:VARCHAR:29,DATE_MATU:VARCHAR:30,TIME_MATU:VARCHAR:31,DATE_APLY:VARCHAR:32,DATE_CFM:VARCHAR:33,TXT_REM_1:VARCHAR:34,TXT_REM_2:VARCHAR:35"/> 
+            </map>  
+        </property>  
+    </bean> 
+    <bean id="IF_TRC_FORM_41_Trigger" class="org.springframework.scheduling.quartz.CronTriggerBean">  
+        <property name="jobDetail" ref="IF_TRC_FORM_41"/>  
+        <property name="cronExpression" value="0 20 * * * ?"></property>  
+    </bean>
+    
+	<bean id="IF_TRC_FORM_LCS_41" class="org.springframework.scheduling.quartz.JobDetailBean">  
+        <property name="name" value="IF_TRC_FORM_LCS_41"/>  
+        <property name="group" value="Boing"/>  
+        <property name="jobClass" value="com.cvicin.timer.job.DBJob"/>  
+        <property name="jobDataAsMap">  
+            <map>  
+                <entry key="code" value="GBK"/>  
+                <entry key="filePath" value="19-BoEing-IF_TRC_FORM_LCS_41-1G"/>  
+                <entry key="split" value="|!"/> 
+                <entry key="tableName" value="IF_TRC_FORM_LCS_41"/>   
+                <entry key="primaryKey" value="COD_FN_ENT:VARCHAR:1,NUM_SEQ_TRC_FORM:VARCHAR:2,COD_LCS_TRC_FORM:VARCHAR:3,NUM_SEQ:VARCHAR:4"/>
+                <entry key="column" value="COD_FN_ENT:VARCHAR:1,NUM_SEQ_TRC_FORM:VARCHAR:2,COD_LCS_TRC_FORM:VARCHAR:3,NUM_SEQ:VARCHAR:4,DATE_STRT_LCS:VARCHAR:5,COD_BUS_SND:VARCHAR:6,COD_PSG:VARCHAR:7,COD_FN_ENT_TR:VARCHAR:8,DATE_TR:VARCHAR:9,TIME_TR:VARCHAR:10,NUM_JRN_NO:VARCHAR:11,COD_PRO_COD_TR:VARCHAR:12,COD_BRCH_OU_TR:VARCHAR:13,ID_INTL_USER_TR:VARCHAR:14,ID_INTL_DEV_TR:VARCHAR:15,COD_TR:VARCHAR:16,COD_CHANL:VARCHAR:17,TXT_REM:VARCHAR:18"/> 
+            </map>  
+        </property>  
+    </bean> 
+    <bean id="IF_TRC_FORM_LCS_41_Trigger" class="org.springframework.scheduling.quartz.CronTriggerBean">  
+        <property name="jobDetail" ref="IF_TRC_FORM_LCS_41"/>  
+        <property name="cronExpression" value="0 25 * * * ?"></property>  
+    </bean>  
+    -->  
+</beans>
